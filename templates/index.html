@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroBot | Agriculture AI Assistant</title>
+    <style>
+        :root {
+            --bg: #f4f8f2;
+            --panel: #ffffff;
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --soft: #e8f5e9;
+            --text: #203020;
+            --muted: #718071;
+            --border: #dbe7d8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, #dff3df 0, transparent 28%),
+                radial-gradient(circle at 90% 90%, #e7f4df 0, transparent 30%),
+                var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: min(1050px, 100%);
+            height: min(760px, 92vh);
+            background: rgba(255,255,255,.88);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: 0 24px 70px rgba(41, 76, 39, .14);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            backdrop-filter: blur(14px);
+        }
+
+        .sidebar {
+            background: linear-gradient(160deg, #1b5e20, #2e7d32 65%, #43a047);
+            color: white;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,.18);
+            border-radius: 16px;
+            font-size: 25px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .brand span {
+            font-size: 12px;
+            opacity: .78;
+        }
+
+        .intro {
+            margin-top: 70px;
+        }
+
+        .intro h2 {
+            font-size: 28px;
+            line-height: 1.12;
+            margin: 0 0 14px;
+        }
+
+        .intro p {
+            color: rgba(255,255,255,.82);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 22px;
+        }
+
+        .topic {
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(255,255,255,.11);
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .notice {
+            font-size: 11px;
+            line-height: 1.5;
+            color: rgba(255,255,255,.7);
+        }
+
+        .chat {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 0;
+            background: rgba(255,255,255,.72);
+        }
+
+        .topbar {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            background: #43a047;
+            border-radius: 50%;
+            box-shadow: 0 0 0 5px #e8f5e9;
+        }
+
+        .clear {
+            border: 0;
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .messages {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 26px;
+            scroll-behavior: smooth;
+            overscroll-behavior: contain;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #b7cdb5;
+            border-radius: 20px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 18px;
+        }
+
+        .message.user { justify-content: flex-end; }
+
+        .bubble {
+            max-width: 78%;
+            padding: 13px 16px;
+            border-radius: 18px;
+            line-height: 1.55;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .bot .bubble {
+            background: var(--soft);
+            border-bottom-left-radius: 5px;
+        }
+
+        .user .bubble {
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 60px 20px 30px;
+            color: var(--muted);
+        }
+
+        .welcome .seed {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .welcome h2 {
+            color: var(--text);
+            margin: 0 0 8px;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 20px;
+        }
+
+        .suggestion {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 9px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            color: var(--primary-dark);
+        }
+
+        .composer {
+            padding: 16px 20px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 0 8px 25px rgba(50,80,45,.06);
+        }
+
+        textarea {
+            flex: 1;
+            resize: none;
+            border: 0;
+            outline: 0;
+            min-height: 44px;
+            max-height: 130px;
+            padding: 12px;
+            font: inherit;
+            color: var(--text);
+            background: transparent;
+        }
+
+        .send {
+            width: 45px;
+            height: 45px;
+            border: 0;
+            border-radius: 15px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .send:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .typing {
+            opacity: .65;
+            font-style: italic;
+        }
+
+        @media (max-width: 760px) {
+            body { padding: 0; }
+            .app {
+                height: 100vh;
+                border-radius: 0;
+                grid-template-columns: 1fr;
+            }
+            .sidebar { display: none; }
+            .bubble { max-width: 88%; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <div class="logo">🌱</div>
+                <div>
+                    <h1>AgroBot</h1>
+                    <span>Agriculture AI Assistant</span>
+                </div>
+            </div>
+
+            <div class="intro">
+                <h2>Grow smarter.<br>Farm better.</h2>
+                <p>
+                    Ask agriculture-related questions and get clear,
+                    AI-powered educational guidance.
+                </p>
+
+                <div class="topics">
+                    <span class="topic">🌾 Crops</span>
+                    <span class="topic">🌱 Soil</span>
+                    <span class="topic">💧 Irrigation</span>
+                    <span class="topic">🐛 Pests</span>
+                    <span class="topic">🌿 Organic Farming</span>
+                    <span class="topic">🚜 Technology</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice">
+            AgroBot is an educational assistant. For important farm decisions,
+            verify recommendations with qualified local agricultural professionals.
+        </div>
+    </aside>
+
+    <main class="chat">
+        <header class="topbar">
+            <div class="status"><span class="dot"></span> AgroBot is ready</div>
+            <button class="clear" onclick="clearChat()">Clear chat</button>
+        </header>
+
+        <section class="messages" id="messages">
+            <div class="welcome" id="welcome">
+                <div class="seed">🌱</div>
+                <h2>How can I help with agriculture?</h2>
+                <div>Ask about crops, soil, irrigation, farming, pests, or agricultural technology.</div>
+
+                <div class="suggestions">
+                    <button class="suggestion" onclick="useSuggestion(this)">How can I improve soil health?</button>
+                    <button class="suggestion" onclick="useSuggestion(this)">What is crop rotation?</button>
+                    <button class="suggestion" onclick="useSuggestion(this)">What are drip irrigation benefits?</button>
+                </div>
+            </div>
+        </section>
+
+        <form class="composer" id="chatForm">
+            <div class="input-wrap">
+                <textarea id="messageInput" placeholder="Ask an agriculture question..." rows="1"></textarea>
+                <button class="send" id="sendButton" type="submit">➤</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("messageInput");
+    const messages = document.getElementById("messages");
+    const sendButton = document.getElementById("sendButton");
+
+    function removeWelcome() {
+        const welcome = document.getElementById("welcome");
+        if (welcome) welcome.remove();
+    }
+
+    function addMessage(text, type) {
+        removeWelcome();
+
+        const row = document.createElement("div");
+        row.className = `message ${type}`;
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+
+        row.appendChild(bubble);
+        messages.appendChild(row);
+        requestAnimationFrame(() => {
+            messages.scrollTo({
+                top: messages.scrollHeight,
+                behavior: "smooth"
+            });
+        });
+        return row;
+    }
+
+    function useSuggestion(button) {
+        input.value = button.textContent;
+        input.focus();
+    }
+
+    function clearChat() {
+        messages.innerHTML = `
+            <div class="welcome" id="welcome">
+                <div class="seed">🌱</div>
+                <h2>How can I help with agriculture?</h2>
+                <div>Ask about crops, soil, irrigation, farming, pests, or agricultural technology.</div>
+                <div class="suggestions">
+                    <button class="suggestion" onclick="useSuggestion(this)">How can I improve soil health?</button>
+                    <button class="suggestion" onclick="useSuggestion(this)">What is crop rotation?</button>
+                    <button class="suggestion" onclick="useSuggestion(this)">What are drip irrigation benefits?</button>
+                </div>
+            </div>`;
+    }
+
+    input.addEventListener("input", () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 130) + "px";
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const message = input.value.trim();
+        if (!message || sendButton.disabled) return;
+
+        addMessage(message, "user");
+        input.value = "";
+        input.style.height = "44px";
+        sendButton.disabled = true;
+
+        const typing = addMessage("AgroBot is thinking…", "bot");
+        typing.querySelector(".bubble").classList.add("typing");
+
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message})
+            });
+
+            const data = await response.json();
+            typing.querySelector(".bubble").classList.remove("typing");
+            typing.querySelector(".bubble").textContent =
+                data.reply || "Sorry, I could not generate a response.";
+        } catch (error) {
+            typing.querySelector(".bubble").classList.remove("typing");
+            typing.querySelector(".bubble").textContent =
+                "Sorry, something went wrong. Please try again.";
+        } finally {
+            sendButton.disabled = false;
+            input.focus();
+            requestAnimationFrame(() => {
+                messages.scrollTo({
+                    top: messages.scrollHeight,
+                    behavior: "smooth"
+                });
+            });
+        }
+    });
+</script>
+</body>
+</html>
